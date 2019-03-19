@@ -2,6 +2,7 @@ __author__ = 'Amogh Jalihal'
 
 import json
 import re
+import sys
 
 class bolParser:
     def __init__(self, bol):
@@ -43,34 +44,69 @@ class bolParser:
                 for a in v:
                     self.Matra.append(a)
         
-    
+    def tokenize(self,matra,matraDensity):
+        # If this returns nothing we are done
+        tokensCompound = ['tirakita','tita']
+        tokensSimple = ['dha','dhi','ghe','tun','na','ti','ta','ka','ta','S']
+        
+        alltokens = tokensSimple + tokensCompound
+        if len(matra) == 0:
+            return(matraDensity)
+        else:
+            for C in tokensCompound:
+                loc = matra.find(C)
+                if loc != -1:
+                    print('found ' + C)                    
+                    matra = matra.replace(C,'',1)
+                    print(matra)
+                    if C == 'tirakita':
+                        matraDensity.append([4])
+                    if C == 'tita':
+                        matraDensity.append([2])
+                    if len(matra) == 0:
+                        return(matraDensity)
+                    # else:
+                    #     self.tokenize(matra,matraDensity)
+            count = 0
+            while len(matra) > 0:
+                valid = False
+                for cs in alltokens:
+                    if cs in matra:
+                        valid = True
+                if not valid:
+                    print("Unidentified akshar!\n Dump:")
+                    print(matra)
+                    print("Exiting..")
+                    sys.exit()
+                
+                for S in tokensSimple:
+                    loc = matra.find(S)
+                    if loc != -1:
+                        print('found ' + S)
+                        count += 1
+                        matra = matra.replace(S,'',1)
+                        print(matra)
+            matraDensity.append([count])
+            #print(matraDensity)
+            return(matraDensity)
+                
+                    
+            
     def getDensity(self):
         """
         TODO: Figure out how to correctly tokenize a Matra
         """
-        tokensCompound = ['tirakita','tita']
-        tokensSimple = ['dha','dhin','ghe','tin','ti','ta','ka','ta']
-        matraDensity = []
-        for ak in self.Matra:
-            m = []
-            count = 0
-            a = ak
+        matraDensity = [[] for len(self.Vibhaag[0])]
+        
+        for mat in self.Matra:
+            print(mat)
+            matraDensity.append(self.tokenize(mat,[]))
+
             
-            for C in tokensCompound:
-                if C in a:
-                    count += 1
-                    
-            for S in tokensSimple:
-                if C in 
-                if S in a:
-                    count+=1
-                    a.replace(S,"")
-                    
-            matraDensity.append([])
-        for t in tokens:
+        return(matraDensity)
             
     def guessTaal(self):
-        matra_per_avartan = int(float(len(self.Akshar))/float(len(self.Avartan)))
+        matra_per_avartan = int(float(len(self.Matra))/float(len(self.Avartan)))
         for taal in self.taaldict.keys():
             if matra_per_avartan == self.taaldict[taal]['matra']:
                 return(taal)
