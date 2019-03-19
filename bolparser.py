@@ -81,35 +81,36 @@ class bolParser:
                         matra = matra.replace(S,'',1)
             matraDensity.append(count)
             return(matraDensity)
-                
-                    
             
-    def getDensity(self):
+    def getMatraDensity(self):
         """
-        TODO: Figure out how to correctly tokenize a Matra
+        Returns list of lists containing number of grouped strokes per beat
         """
         matraDensity = []
         numvibhaags = self.num_avartans*len(self.Vibhaag[0])
         size = int(float(len(self.Matra))/float(numvibhaags))
         st = 0
         en = st + size
-
         for i in range(self.num_avartans):
             ad = []
             for v in self.Vibhaag[i]:
                 vd = []
                 for mat in self.Matra[st:en]:
                     vd.append(self.tokenize(mat,[]))
-                  
                 st = en 
                 en = en + size
-                    
                 ad.append(vd)
             matraDensity.append(ad)
-
-            
         return(matraDensity)
-            
+
+    # TEST
+    # bol = "dhati tadha tita  dhadha| tirakita dhaghe dhina dhinatita|"\
+    #       "S tadha titatirakitadha  dhadha| tirakita dhaghe dhina dhinatita||"
+    # m = bolParser(bol)
+    # print(m.getDensity())
+    # Output: [[[[2], [2], [2], [2]], [[4], [2], [2], [2, 2]], [[1], [2], [4, 2, 1], [2]], [[4], [2], [2], [2, 2]]]]
+    
+    
     def guessTaal(self):
         matra_per_avartan = int(float(len(self.Matra))/float(len(self.Avartan)))
         for taal in self.taaldict.keys():
