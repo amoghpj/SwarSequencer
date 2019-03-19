@@ -45,9 +45,8 @@ class bolParser:
                     self.Matra.append(a)
         
     def tokenize(self,matra,matraDensity):
-        # If this returns nothing we are done
         tokensCompound = ['tirakita','tita']
-        tokensSimple = ['dha','dhi','ghe','tun','na','ti','ta','ka','ta','S']
+        tokensSimple = ['dha','dhi','ghe','tun','na','ti','ta','ka','S']
         
         alltokens = tokensSimple + tokensCompound
         if len(matra) == 0:
@@ -56,17 +55,13 @@ class bolParser:
             for C in tokensCompound:
                 loc = matra.find(C)
                 if loc != -1:
-                    print('found ' + C)                    
                     matra = matra.replace(C,'',1)
-                    print(matra)
                     if C == 'tirakita':
-                        matraDensity.append([4])
+                        matraDensity.append(4)
                     if C == 'tita':
-                        matraDensity.append([2])
+                        matraDensity.append(2)
                     if len(matra) == 0:
                         return(matraDensity)
-                    # else:
-                    #     self.tokenize(matra,matraDensity)
             count = 0
             while len(matra) > 0:
                 valid = False
@@ -82,12 +77,9 @@ class bolParser:
                 for S in tokensSimple:
                     loc = matra.find(S)
                     if loc != -1:
-                        print('found ' + S)
                         count += 1
                         matra = matra.replace(S,'',1)
-                        print(matra)
-            matraDensity.append([count])
-            #print(matraDensity)
+            matraDensity.append(count)
             return(matraDensity)
                 
                     
@@ -106,13 +98,11 @@ class bolParser:
             ad = []
             for v in self.Vibhaag[i]:
                 vd = []
-                print(v)
                 for mat in self.Matra[st:en]:
-                    print(mat)
                     vd.append(self.tokenize(mat,[]))
                   
-                    st = en 
-                    en = en + size
+                st = en 
+                en = en + size
                     
                 ad.append(vd)
             matraDensity.append(ad)
