@@ -96,11 +96,26 @@ class bolParser:
         """
         TODO: Figure out how to correctly tokenize a Matra
         """
-        matraDensity = [[] for len(self.Vibhaag[0])]
-        
-        for mat in self.Matra:
-            print(mat)
-            matraDensity.append(self.tokenize(mat,[]))
+        matraDensity = []
+        numvibhaags = self.num_avartans*len(self.Vibhaag[0])
+        size = int(float(len(self.Matra))/float(numvibhaags))
+        st = 0
+        en = st + size
+
+        for i in range(self.num_avartans):
+            ad = []
+            for v in self.Vibhaag[i]:
+                vd = []
+                print(v)
+                for mat in self.Matra[st:en]:
+                    print(mat)
+                    vd.append(self.tokenize(mat,[]))
+                  
+                    st = en 
+                    en = en + size
+                    
+                ad.append(vd)
+            matraDensity.append(ad)
 
             
         return(matraDensity)
