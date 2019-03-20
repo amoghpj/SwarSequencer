@@ -5,6 +5,25 @@ import re
 import sys
 
 class bolParser:
+    """
+    A bolParser object is initialized with a tabla 'bol' string,
+    a sequence of tabla stroke phrases. 
+    Terminology:
+    0. A Taal is a specific rhythm cycle defined by the number of beats,
+       and the distribution of beats in parts.
+    1. A beat is called a Matra. A Matra can be composed of multiple 
+       strokes.
+    2. A set of Matras comprise a beat cycle, called an Avartan. This is 
+       designated by a double pipe '||'.
+    3. An Avartan can be subdivided into parts, called Vibhaags. The grouping
+       of Matras into Vibhaags is specified by the Taal. This is 
+       designated by a single pipe '|'.
+    Example:
+    Taal: Teen taal
+    dha dhin dhin dha | dha dhin dhin dha |
+    dha tin tin ta | ta dhin dhin dha ||
+    - 16 Matras, 4 Vibhaags, 1 Avartan.
+    """
     def __init__(self, bol):
         self.bol = bol
         self.Avartan = list()
@@ -41,12 +60,13 @@ class bolParser:
         GroupedAkshars = [[v.split(' ') for v in V] for V in self.Vibhaag]
         for av in GroupedAkshars:
             for v in av:
-                for a in v:
-                    self.Matra.append(a)
+                for m in v:
+                    self.Matra.append(m)
         
     def tokenize(self,matra,matraDensity):
         tokensCompound = ['tirakita','tita']
         tokensSimple = ['dha','dhi','ghe','tun','na','ti','ta','ka','S']
+        compoundTokenDensity = {'tirakita':4,'tita':2}
         
         alltokens = tokensSimple + tokensCompound
         if len(matra) == 0:
@@ -56,10 +76,7 @@ class bolParser:
                 loc = matra.find(C)
                 if loc != -1:
                     matra = matra.replace(C,'',1)
-                    if C == 'tirakita':
-                        matraDensity.append(4)
-                    if C == 'tita':
-                        matraDensity.append(2)
+                    matraDensity.append(compoundTokenDensity[C])
                     if len(matra) == 0:
                         return(matraDensity)
             count = 0
