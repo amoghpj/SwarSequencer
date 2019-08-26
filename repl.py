@@ -17,7 +17,8 @@ status = {
     'notes': [1],
     'root': root,
     'duration': [0.2],
-    'stutter': [1]
+    'stutter': [1],
+    'type': 'osc'
 }
 
 t = Thread(target=sequencer.sequence, args=(status_queue,))
@@ -36,8 +37,14 @@ def avaroha(num_notes, stutter=1):
     play_notes = raag['avaroha']
     sequence_notes(play_notes, num_notes, stutter)
 
-def sequence_notes(note_list, num_notes, stutter):
+def meend(num_notes, stutter=1):
+    global raag
+    play_notes = raag['avaroha']
+    sequence_notes(play_notes, num_notes, stutter, 'glide')
+    
+def sequence_notes(note_list, num_notes, stutter, outtype='osc'):
     status['stutter'] = [stutter]
+    status['type'] = outtype
     if num_notes > len(note_list):
         status['notes'] = note_list
         for n in range(1, num_notes - len(note_list)):

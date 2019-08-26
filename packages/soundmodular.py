@@ -7,7 +7,7 @@ import wave
 
 import math
 import struct
-from math import cos, pi
+from math import cos, pi, exp
 from datetime import datetime
 import random
 
@@ -210,6 +210,50 @@ class Module:
         return out_block
 
     # Effects modules
+    def glide(self, duration, frequencies):
+        """glide - Generates waveform from interpolating linearly for every
+        frequency in frequencies, during duration
+  
+        :param duration: Duration in seconds (int)
+        :param frequencies: Frequencies (list)
+        :return: Output audio block (list)
+  
+        """
+        ##
+        gain = 5000.
+        ##'
+        num_freq = len(frequencies)
+        splits = num_freq - 1
+        print('splits='+str(splits))
+        num_samples = int(duration*self.sampling_rate)    # N : Number of samples to play
+        print('len num_samples=' + str(num_samples))
+        if splits == 0:
+            num_samples_per_split = num_samples
+        else:
+            num_samples_per_split = int(float(num_samples)/float(splits))    # N : Number of samples to play
+            
+        print('len num_samples_per_split=' + str(num_samples_per_split))
+  
+        out_block = [0 for n in range(0, num_samples)]
+        step = 1./float(self.sampling_rate)
+        times = [float(t)*step for t in range(num_samples_per_split)]
+        counter = 0
+        for fid in range( len(frequencies) - 1 ):
+            start_freq = float(frequencies[fid])
+            end_freq = frequencies[fid + 1]
+            # Linear interpolation :
+            fstep = float(end_freq - start_freq)/float(num_samples_per_split)
+            currfreq = start_freq
+            fs = [start_freq+i*fstep for i in range(len(times))]
+            # Quadratic
+            fs = self.fit_transition(start_freq, end_freq, num_samples_per_split)
+            for t, f in zip(times, fs):
+                out_block[counter] = gain*cos(t*f)
+                counter +=1
+        return out_block
+
+    # Effects modules
+    
 
     def sinusoid_fm(self, block, freq_lfo, depth):
         """
@@ -369,3 +413,23 @@ class Module:
         out_block = [0 for n in range(0, num_samples)]
 
         return out_block
+    
+    def fit_transition(self, low, high, num_points):
+        print(low)
+        print(high)
+        exponent = 0.075
+        x1 = 0
+        y1 = low
+        x2 = num_points
+        y2 = high
+        xmid = (x2-x1)/2.
+        step = (x2-x1)/float(num_points)
+        X = [x1 + i*step for i in range(num_points)]
+    
+        out = []
+        sign = 1.
+        if y2 < y1:
+            sign= -1.
+        for x in X:
+            out.append(y1 + sign*y2*(1./(1. + exp(-exponent*(x - xmid)))))
+        return(out)
